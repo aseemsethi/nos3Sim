@@ -87,9 +87,12 @@ registered table `IDS.BaselineTbl`.
   only, no file).
 * `IDS_DUMP_BASELINE_CC` - one command that stages the live baseline into the
   table *and* has IDS send a cFE `TBL DUMP` command to write it to a file at
-  `IDS_BASELINE_FILENAME` (`/cf/ids_baseline_tbl.tbl`, i.e. host
+  `IDS_BASELINE_FILENAME` (`/cf/ids_base.tbl`, i.e. host
   `fsw/build/exe/cpu1/cf/`). Since IDS auto-loads that path at startup, the
-  dumped file persists the baseline across a reset.
+  dumped file persists the baseline across a reset. The basename must stay
+  <= 19 characters - this build's OSAL rejects longer ones with
+  `OS_FS_ERR_NAME_TOO_LONG` (which is exactly what the original
+  `ids_baseline_tbl.tbl`, 20 chars, hit).
 * `IDS_LOAD_BASELINE_CC` - reloads the baseline from the table buffer.
 
 You can also dump/load `IDS.BaselineTbl` with the standard cFE TBL commands

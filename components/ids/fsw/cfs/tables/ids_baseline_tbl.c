@@ -14,10 +14,14 @@
 #include "cfe_tbl_filedef.h"
 #include "ids_baseline.h"
 
+/*
+** Output filename must match IDS_BASELINE_FILENAME in ids_platform_cfg.h
+** (basename <= 19 chars - see the comment there for why).
+*/
 static CFE_TBL_FileDef_t CFE_TBL_FileDef =
 {
     "BaselineTbl", "IDS.BaselineTbl", "IDS learned-baseline table",
-    "ids_baseline_tbl.tbl", sizeof(IDS_BaselineTbl_t)
+    "ids_base.tbl", sizeof(IDS_BaselineTbl_t)
 };
 
 /*

@@ -422,9 +422,20 @@ static void IDS_MirrorSubscribeMid(CFE_SB_MsgId_t MsgId)
     int32 status;
     int   i;
 
+    /*
+    ** Skip our own MIDs. This includes ALLSUBS/ONESUB themselves: IDS already
+    ** explicitly subscribes to those two directly in IDS_EnableMirror, and
+    ** since that subscribe happens BEFORE SEND_PREV_SUBS_CC, IDS's own
+    ** ALLSUBS/ONESUB subscriptions are themselves part of the replay this
+    ** function processes - without this skip, IDS would try to re-subscribe
+    ** to what it's already subscribed to and get a "Duplicate Subscription"
+    ** event from CFE_SB for no benefit.
+    */
     if (CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(IDS_HK_TLM_MID)) ||
         CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(IDS_ANOMALY_TLM_MID)) ||
-        CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(IDS_CMD_MID)))
+        CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(IDS_CMD_MID)) ||
+        CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(CFE_SB_ALLSUBS_TLM_MID)) ||
+        CFE_SB_MsgId_Equal(MsgId, CFE_SB_ValueToMsgId(CFE_SB_ONESUB_TLM_MID)))
     {
         return;
     }
@@ -680,14 +691,33 @@ int32 IDS_EnableMirror(uint32 DurationSec)
     int32                   status;
     CFE_MSG_CommandHeader_t CmdMsg;
 
-    /* Already on: just refresh the window/duration */
+    /*
+    ** Already on: a second IDS_SET_MIRROR_CC(ENABLE=1) arrived while the
+    ** window was still open. This is the ONLY code path that can move the
+    ** deadline once set - there is no internal auto-retrigger anywhere else
+    ** in this app. Report how much time was actually left, so a duplicate or
+    ** re-sent command shows up unambiguously in the event log rather than
+    ** looking like the timer misbehaved on its own.
+    */
     if (IDS_AppData.MirrorActive)
     {
-        IDS_AppData.MirrorStartMs    = IDS_GetNowMs();
-        IDS_AppData.MirrorDeadlineMs =
-            (DurationSec > 0) ? (IDS_AppData.MirrorStartMs + (uint64)DurationSec * 1000) : 0;
+        uint64 NowMs         = IDS_GetNowMs();
+        int32  SecRemaining  = -1; /* -1 = no deadline was set (open-ended window) */
+
+        if (IDS_AppData.MirrorDeadlineMs != 0)
+        {
+            SecRemaining = (NowMs < IDS_AppData.MirrorDeadlineMs)
+                               ? (int32)((IDS_AppData.MirrorDeadlineMs - NowMs) / 1000)
+                               : 0;
+        }
+
+        IDS_AppData.MirrorStartMs    = NowMs;
+        IDS_AppData.MirrorDeadlineMs = (DurationSec > 0) ? (NowMs + (uint64)DurationSec * 1000) : 0;
+
         CFE_EVS_SendEvent(IDS_MIRROR_ENABLE_INF_EID, CFE_EVS_EventType_INFORMATION,
-                          "IDS: mirror window refreshed, duration=%u s", (unsigned int)DurationSec);
+                          "IDS: mirror ENABLE received while already active (had ~%d s left) - "
+                          "window extended to %u s from now",
+                          (int)SecRemaining, (unsigned int)DurationSec);
         return CFE_SUCCESS;
     }
 

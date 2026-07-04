@@ -41,8 +41,15 @@
 #define IDS_MIRROR_MAX_DRAIN_PER_CYCLE 32
 
 /* Default baseline table file, loaded at startup and target of
-** IDS_SAVE_BASELINE_CC / IDS_LOAD_BASELINE_CC via CFE_TBL */
-#define IDS_BASELINE_FILENAME "/cf/ids_baseline_tbl.tbl"
+** IDS_DUMP_BASELINE_CC via CFE_TBL. The basename (after the last '/') MUST
+** be <= 19 characters: this build's OS_MAX_FILE_NAME is 20, and the OSAL
+** name-length check (osapi-filesys.c) requires the NUL terminator to fall
+** WITHIN the first OS_MAX_FILE_NAME bytes - so a 20-char basename (with its
+** terminator at byte 21) fails with OS_FS_ERR_NAME_TOO_LONG (-104), which is
+** exactly what "ids_baseline_tbl.tbl" (20 chars) hit. Must match the
+** filename in ids_baseline_tbl.c's CFE_TBL_FileDef - that's what the build
+** actually names the on-disk default table file this loads at startup. */
+#define IDS_BASELINE_FILENAME "/cf/ids_base.tbl"
 
 /* Pipe receive timeout in ms. This is the PRIMARY HK cadence driver: each
 ** time the pipe idles this long, IDS publishes HK and runs the silence check.
