@@ -88,9 +88,9 @@ void IDS_AppMain(void)
             ** With the bus mirror off (default), IDS sees only EVS events plus
             ** its own commands, so the pipe idles regularly and this fires at
             ** roughly the timeout rate. This is deliberately clock-independent:
-            ** OS_GetLocalTime / CFE_TIME here return NOS *simulated* time
-            ** (tone-driven, quantized, and non-monotonic across sim restarts),
-            ** so gating HK on an elapsed-sim-time delta is unreliable.
+            ** the only clock here is NOS *simulated* time (tone-driven,
+            ** quantized, non-monotonic across sim restarts), so gating HK on an
+            ** elapsed-sim-time delta is unreliable.
             */
             IDS_CheckSilence();
             IDS_ReportHousekeeping();
@@ -254,22 +254,23 @@ int32 IDS_AppInit(void)
 }
 
 /*
-** Current time in milliseconds, for interval/rate/silence/HK-cadence math.
+** Current time in milliseconds, for interval/rate/silence math and the mirror
+** window deadline.
 **
-** Deliberately reads the real host OS clock (OS_GetLocalTime) rather than
-** CFE_TIME_GetTime(): cFE's mission time in this simulated environment is
-** driven by an external tone signal from nos_time_driver/42, and every
-** other app's HK cadence in this codebase comes from SCH's fixed schedule
-** table, not from reading CFE_TIME directly. IDS is the one app that needs
-** its own free-running cadence with nothing else driving it, so it needs a
-** clock source guaranteed to advance in step with real elapsed time
-** regardless of mission-time sync state.
+** Built from CFE_TIME_GetTime(): its Seconds field is honest, tone-driven
+** mission seconds. We deliberately do NOT use OS_GetLocalTime here - in this
+** NOS build the OSAL clock returns simulated time with non-standard tick
+** scaling (OS_TimeGetTotalMilliseconds mis-reads it), which made a 30 s mirror
+** window expire in ~1 s. Seconds*1000 plus the subsecond fraction gives real
+** milliseconds. Callers guard against the backward step CFE_TIME can take
+** across a sim restart (see the NowMs >= LastTimeMs checks).
 */
 uint64 IDS_GetNowMs(void)
 {
-    OS_time_t Now;
-    OS_GetLocalTime(&Now);
-    return (uint64)OS_TimeGetTotalMilliseconds(Now);
+    CFE_TIME_SysTime_t Now = CFE_TIME_GetTime();
+
+    /* Subseconds is a 32-bit fraction of one second: ms = Subseconds / (2^32/1000) */
+    return ((uint64)Now.Seconds * 1000) + ((uint64)Now.Subseconds / 4294967);
 }
 
 /*
