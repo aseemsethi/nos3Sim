@@ -1,0 +1,43 @@
+TELEMETRY IDS IDS_HK_TLM <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS_Hk_tlm_t"
+  APPEND_ID_ITEM CCSDS_STREAMID       16 UINT 0x08FE  "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SEQUENCE       16 UINT         "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_LENGTH         16 UINT         "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SECONDS        32 UINT         "CCSDS Telemetry Secondary Header (seconds)" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SUBSECS        16 UINT         "CCSDS Telemetry Secondary Header (subseconds)" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SPARE          32 UINT         ""
+  APPEND_ITEM    CMD_ERR_COUNT         8 UINT         "Command Error Count"
+  APPEND_ITEM    CMD_COUNT             8 UINT         "Command Count"
+  APPEND_ITEM    MODE                  8 UINT         "Current mode"
+    STATE LEARN   0
+    STATE MONITOR 1
+    STATE IDLE    2
+  APPEND_ITEM    MIRROR_ACTIVE         8 UINT         "Runtime deep bus mirror on/off"
+    STATE OFF 0
+    STATE ON  1
+  APPEND_ITEM    SUBSCRIBED_MID_COUNT 16 UINT         "MIDs currently mirrored (0 when mirror off)"
+  APPEND_ITEM    KNOWN_APP_COUNT      16 UINT         "Apps with a learned profile"
+  APPEND_ITEM    EVENTS_PROCESSED     32 UINT         "EVS events processed"
+  APPEND_ITEM    MIRRORED_MSG_COUNT   32 UINT         "Non-EVS bus traffic processed"
+  APPEND_ITEM    ANOMALIES_DETECTED   32 UINT         "Anomalies detected"
+  APPEND_ITEM    BASELINE_SAVED        8 UINT         "Set after a successful IDS_SAVE_BASELINE_CC"
+    STATE FALSE 0
+    STATE TRUE  1
+
+TELEMETRY IDS IDS_ANOMALY_TLM <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS_AnomalyRpt_tlm_t"
+  APPEND_ID_ITEM CCSDS_STREAMID       16 UINT 0x08FF  "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SEQUENCE       16 UINT         "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_LENGTH         16 UINT         "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SECONDS        32 UINT         "CCSDS Telemetry Secondary Header (seconds)" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SUBSECS        16 UINT         "CCSDS Telemetry Secondary Header (subseconds)" BIG_ENDIAN
+  APPEND_ITEM    CCSDS_SPARE          32 UINT         ""
+  APPEND_ITEM    TIMESTAMP            32 UINT         "IDS internal ms timestamp when detected"
+  APPEND_ITEM    SOURCE_APP_NAME     160 STRING       "App name the anomaly is attributed to"
+  APPEND_ITEM    SOURCE_EVENT_OR_MID  16 UINT         "EVS EventID, or MID for bus-level findings"
+  APPEND_ITEM    ANOMALY_TYPE          8 UINT         "Kind of anomaly detected"
+    STATE UNKNOWN_APP      0
+    STATE UNKNOWN_EVENT    1
+    STATE RATE_FLOOD       2
+    STATE APP_SILENT       3
+    STATE CMD_REJECT_SPIKE 4
+  APPEND_ITEM    SCORE                32 FLOAT        "Detector-specific severity score, higher = more severe"
+  APPEND_ITEM    DESCRIPTION         512 STRING       "Human-readable description"

@@ -1,0 +1,24 @@
+CONTAINER ID   IMAGE                        COMMAND                  CREATED          STATUS          PORTS     NAMES
+135b6683f43b   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             nos-time-driver
+388a06b10f66   ivvitc/nos3-64:20251107      "./support/standalone"   12 minutes ago   Up 12 minutes             sc01-cryptolib-gsw
+aed149fad78f   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-torquer-sim
+8d25a2783eee   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-startrk-sim
+01f66a2973ac   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-sample-sim
+ec277ba3b784   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-radio-sim
+bdf7131a9643   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-rw-sim2
+6c894915d508   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-rw-sim1
+9a18a517426b   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-rw-sim0
+5400da7160e4   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-mag-sim
+a17c7862b035   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-imu-sim
+353a91b54054   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-gps-sim
+4f5c2447e790   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-fss-sim
+dee2a6028275   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   12 minutes ago   Up 12 minutes             sc01-eps-sim
+b9cba9a72712   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   13 minutes ago   Up 12 minutes             sc01-css-sim
+c3a53c21501c   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   13 minutes ago   Up 13 minutes             sc01-truth42sim
+2026c85af21c   ivvitc/nos3-64:20251107      "/home/jstar/Desktop…"   13 minutes ago   Up 13 minutes             sc01-nos-fsw
+25002f92289f   ivvitc/nos3-64:20251107      "/usr/bin/nos_engine…"   13 minutes ago   Up 13 minutes             sc01-nos-engine-server
+37e2abb638bf   ivvitc/nos3-64:20251107      "/home/jstar/.nos3/4…"   13 minutes ago   Up 13 minutes             sc01-fortytwo
+3495ba6a9719   ivvitc/nos3-64:20251107      "./nos3-sim-cmdbus-b…"   13 minutes ago   Up 13 minutes             nos-sim-bridge
+51cf5ca1c0f5   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   13 minutes ago   Up 13 minutes             nos-udp-terminal
+3b514c700537   ivvitc/nos3-64:20251107      "./nos3-single-simul…"   13 minutes ago   Up 13 minutes             nos-terminal
+bbb139608c74   ballaerospace/cosmos:4.5.0   "/bin/sh -c 'ruby La…"   13 minutes ago   Up 13 minutes             cosmos-openc3-operator-1

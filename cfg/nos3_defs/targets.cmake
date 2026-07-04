@@ -118,6 +118,7 @@ list(APPEND MISSION_GLOBAL_APPLIST
         generic_star_tracker/fsw/cfs
         generic_thruster/fsw/cfs
         generic_torquer/fsw/cfs
+        ids/fsw/cfs
         mgr/fsw/cfs
         novatel_oem615/fsw/cfs
         onair

@@ -159,3 +159,13 @@ FALSE                                   ! Echo to stdout
 "SC[0].PosR"                            ! Prefix 1
 "SC[0].qn"                              ! Prefix 2
 "Orb[0].PosN"                           ! Prefix 3
+**********************************  SAMPLE IPC  *****************************
+TX                                      ! IPC Mode (OFF,TX,RX,TXRX,ACS,WRITEFILE,READFILE)
+"SAMPLE.42"                                ! File name for WRITE or READ
+SERVER                                  ! Socket Role (SERVER,CLIENT,GMSEC_CLIENT)
+fortytwo       4242                     ! Server Host Name, Port 
+FALSE                                   ! Allow Blocking (i.e. wait on RX)
+TRUE                                    ! Echo to stdout
+2                                       ! Number of TX prefixes
+"SC"                                    ! Prefix 0
+"Orb"                                   ! Prefix 1

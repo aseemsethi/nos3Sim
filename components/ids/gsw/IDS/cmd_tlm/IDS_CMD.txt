@@ -1,0 +1,109 @@
+COMMAND IDS IDS_NOOP_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS NOOP Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_RESET_COUNTERS_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Reset Counters Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 1        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_SET_MODE_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Set Mode Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 2      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 2        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+  APPEND_PARAMETER MODE                8  UINT MIN_UINT8 MAX_UINT8 0        "Mode to switch to"
+    STATE LEARN   0
+    STATE MONITOR 1
+    STATE IDLE    2
+
+COMMAND IDS IDS_SAVE_BASELINE_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Save Baseline Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 3        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_LOAD_BASELINE_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Load Baseline Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 4        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_DUMP_BASELINE_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Dump Baseline to file (via cFE Table Services)"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 10       "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_CLEAR_BASELINE_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Clear Baseline Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 1      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 5        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+
+COMMAND IDS IDS_ENABLE_APP_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Enable App Detection Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 21     "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 6        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+  APPEND_PARAMETER APP_NAME            160 STRING "SAMPLE"                 "cFE app name to enable detection for (matches CFE_ES app name, max 20 chars)"
+
+COMMAND IDS IDS_DISABLE_APP_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Disable App Detection Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 21     "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 7        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+  APPEND_PARAMETER APP_NAME            160 STRING "SAMPLE"                 "cFE app name to disable detection for (matches CFE_ES app name, max 20 chars)"
+
+COMMAND IDS IDS_SET_THRESHOLD_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Set Detector Threshold Command"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 9      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 8        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+  # Field order mirrors IDS_SetThreshold_cmd_t: Threshold (float) is declared
+  # before DetectorId so it lands 4-byte aligned right after CmdHeader with
+  # no mid-struct C compiler padding.
+  APPEND_PARAMETER THRESHOLD           32 FLOAT MIN_FLOAT32 MAX_FLOAT32 5.0 "Meaning depends on DETECTOR_ID: rate ratio, silence ms, or cmd-error-count spike"
+  APPEND_PARAMETER DETECTOR_ID          8 UINT MIN_UINT8 MAX_UINT8 0        "Which detector this threshold applies to"
+    STATE RATE       0
+    STATE SILENCE    1
+    STATE CMD_REJECT 2
+  # 3 bytes of trailing padding: the C struct rounds up to a multiple of 4
+  # because it contains a float member, same as any other cFS command whose
+  # payload size isn't already a multiple of 4. Declared as three individual
+  # 8-bit items rather than one 24-bit item - COSMOS's LITTLE_ENDIAN bitfield
+  # packer only accepts 8/16/32/64-bit widths, and a bare byte has no
+  # endianness ambiguity to begin with.
+  APPEND_PARAMETER PAD_1                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"
+  APPEND_PARAMETER PAD_2                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"
+  APPEND_PARAMETER PAD_3                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"
+
+COMMAND IDS IDS_SET_MIRROR_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS Enable/Disable runtime deep bus mirror"
+  APPEND_PARAMETER CCSDS_STREAMID      16 UINT MIN_UINT16 MAX_UINT16 0x18FE "CCSDS Packet Identification" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_SEQUENCE      16 UINT MIN_UINT16 MAX_UINT16 0xC000 "CCSDS Packet Sequence Control" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_LENGTH        16 UINT MIN_UINT16 MAX_UINT16 9      "CCSDS Packet Data Length" BIG_ENDIAN
+  APPEND_PARAMETER CCSDS_FC            8  UINT MIN_UINT8 MAX_UINT8 9        "CCSDS Command Function Code"
+  APPEND_PARAMETER CCSDS_CHECKSUM      8  UINT MIN_UINT8 MAX_UINT8 0        "CCSDS Command Checksum"
+  # Field order mirrors IDS_SetMirror_cmd_t: DurationSec (uint32) before Enable
+  # (uint8) so it lands 4-byte aligned right after CmdHeader with no padding.
+  APPEND_PARAMETER DURATION_SEC        32 UINT MIN_UINT32 MAX_UINT32 30     "Auto-disable after N sim-seconds; 0 = stay on until disabled"
+  APPEND_PARAMETER ENABLE               8 UINT MIN_UINT8 MAX_UINT8 1        "1 = enable mirror, 0 = disable now"
+    STATE DISABLE 0
+    STATE ENABLE  1
+  # 3 trailing pad bytes (struct rounds up to a multiple of 4 due to uint32).
+  APPEND_PARAMETER PAD_1                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"
+  APPEND_PARAMETER PAD_2                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"
+  APPEND_PARAMETER PAD_3                8 UINT MIN_UINT8 MAX_UINT8 0        "Structure padding, do not set"

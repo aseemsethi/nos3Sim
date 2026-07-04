@@ -17,6 +17,7 @@ components = {
     "generic_star_tracker": "st",
     "generic_thruster": "thruster",
     "generic_torquer": "torquer",
+    "ids": "ids",
     "mgr": "mgr",
     "novatel_oem615": "gps",
     "onair": "onair",
