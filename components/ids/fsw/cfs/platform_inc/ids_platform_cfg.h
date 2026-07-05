@@ -84,6 +84,14 @@
 ** least this many counts between two consecutive CI HK packets */
 #define IDS_DEFAULT_CMD_ERR_SPIKE 5
 
+/* DETECTOR_CMD_FLOOD: flag CI or CI_LAB if its combined valid+invalid command
+** count grows faster than this many commands/sec between two consecutive HK
+** packets. Checked against BOTH ingest apps: CI_LAB is what this sim's
+** COSMOS DEBUG interface actually reaches, CI is what the real satellite
+** uplink path uses (see the DEBUG/RADIO port trace) - a flood can arrive via
+** either. */
+#define IDS_DEFAULT_CMD_FLOOD_RATE 20.0
+
 /* Note: Debug flag disabled (commented out) by default */
 //#define IDS_CFG_DEBUG
 

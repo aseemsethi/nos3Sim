@@ -39,5 +39,6 @@ TELEMETRY IDS IDS_ANOMALY_TLM <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS_Anom
     STATE RATE_FLOOD       2
     STATE APP_SILENT       3
     STATE CMD_REJECT_SPIKE 4
+    STATE CMD_FLOOD        5
   APPEND_ITEM    SCORE                32 FLOAT        "Detector-specific severity score, higher = more severe"
   APPEND_ITEM    DESCRIPTION         512 STRING       "Human-readable description"

@@ -85,14 +85,37 @@ bool IDS_Detector_IsSilent(const IDS_AppProfile_t *Profile, uint64 NowMs, uint32
     return ((NowMs - Profile->LastEventTimeMs) > SilenceTimeoutMs);
 }
 
-bool IDS_Detector_CheckCiHk(uint8 NewCmdErrCount, uint8 LastCmdErrCount, uint8 SpikeThreshold)
+bool IDS_Detector_CheckCiHk(uint16 NewCmdErrCount, uint16 LastCmdErrCount, uint16 SpikeThreshold)
 {
-    /* uint8 counters wrap; only compare when the new value is the larger one.
+    /* uint16 counters wrap; only compare when the new value is the larger one.
     ** A wrap (new < last) just resets the window rather than reporting a
     ** false spike. */
     if (NewCmdErrCount > LastCmdErrCount)
     {
-        return ((NewCmdErrCount - LastCmdErrCount) >= SpikeThreshold);
+        return ((uint16)(NewCmdErrCount - LastCmdErrCount) >= SpikeThreshold);
     }
     return false;
+}
+
+bool IDS_Detector_CheckCmdRate(uint32 NewTotalCmdCount, uint32 LastTotalCmdCount, uint64 NowMs, uint64 LastTimeMs,
+                               double MaxCmdsPerSec, float *RateOut)
+{
+    double IntervalMs;
+    double Rate;
+
+    *RateOut = 0.0f;
+
+    /* A counter reset (NewTotal < LastTotal - e.g. IDS_RESET_COUNTERS_CC or a
+    ** ci/ci_lab restart) or a non-positive interval just re-baselines rather
+    ** than computing a garbage/negative rate. */
+    if (NewTotalCmdCount < LastTotalCmdCount || NowMs <= LastTimeMs)
+    {
+        return false;
+    }
+
+    IntervalMs = (double)(NowMs - LastTimeMs);
+    Rate       = ((double)(NewTotalCmdCount - LastTotalCmdCount) * 1000.0) / IntervalMs;
+    *RateOut   = (float)Rate;
+
+    return (Rate > MaxCmdsPerSec);
 }

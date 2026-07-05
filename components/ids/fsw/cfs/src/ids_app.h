@@ -92,13 +92,32 @@ typedef struct
     */
     double RateRatioThreshold;
     uint32 SilenceTimeoutMs;
-    uint8  CmdErrSpikeThreshold;
+    uint16 CmdErrSpikeThreshold;
+    double CmdFloodRateThreshold; /* max combined valid+invalid cmds/sec, CI and CI_LAB */
 
     /*
-    ** Cross-app correlation state for the CI reject-spike detector
+    ** Cross-app correlation state for the CI reject-spike detector. Width
+    ** matches CI_HkTlm_t.usCmdErrCnt (uint16) - this used to be uint8, which
+    ** truncated the real counter and could mask a spike that crossed a
+    ** 256-count boundary.
     */
-    uint8 LastCiCmdErrCount;
-    bool  HaveLastCiCmdErrCount;
+    uint16 LastCiCmdErrCount;
+    bool   HaveLastCiCmdErrCount;
+
+    /*
+    ** Cross-app correlation state for the command-flood (DDoS) rate detector,
+    ** tracked separately for CI (the real, flight-representative uplink app)
+    ** and CI_LAB (what this sim's COSMOS DEBUG interface actually reaches -
+    ** see the DEBUG/RADIO port trace: DEBUG talks to CI_LAB, RADIO talks to
+    ** CI via the CryptoLib/radio-sim chain). A flood can show up on either.
+    */
+    uint32 LastCiCmdTotal;
+    uint64 LastCiCmdTotalTimeMs;
+    bool   HaveLastCiCmdTotal;
+
+    uint32 LastCiLabCmdTotal;
+    uint64 LastCiLabCmdTotalTimeMs;
+    bool   HaveLastCiLabCmdTotal;
 
     /*
     ** HK cadence is driven by the pipe timeout (primary) with a

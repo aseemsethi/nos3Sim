@@ -28,8 +28,10 @@
 #include "cfe_sb_msg.h"  /* CFE_SB_SingleSubscriptionTlm_t, CFE_SB_ENABLE_SUB_REPORTING_CC, CFE_SB_SEND_PREV_SUBS_CC */
 #include "cfe_evs_msg.h" /* CFE_EVS_LongEventTlm_t */
 #include "cfe_tbl_msg.h" /* CFE_TBL_DumpCmd_t, CFE_TBL_DUMP_CC, CFE_TBL_BufferSelect_ACTIVE */
-#include "ci_msgids.h"   /* CI_HK_TLM_MID */
-#include "ci_hktlm.h"    /* CI_HkTlm_t */
+#include "ci_msgids.h"     /* CI_HK_TLM_MID */
+#include "ci_hktlm.h"      /* CI_HkTlm_t */
+#include "ci_lab_msgids.h" /* CI_LAB_HK_TLM_MID */
+#include "ci_lab_msg.h"    /* CI_LAB_HkTlm_t */
 
 /*
 ** Global Data
@@ -235,7 +237,10 @@ int32 IDS_AppInit(void)
     IDS_AppData.RateRatioThreshold    = IDS_DEFAULT_RATE_RATIO;
     IDS_AppData.SilenceTimeoutMs      = IDS_DEFAULT_SILENCE_TIMEOUT_MS;
     IDS_AppData.CmdErrSpikeThreshold  = IDS_DEFAULT_CMD_ERR_SPIKE;
+    IDS_AppData.CmdFloodRateThreshold = IDS_DEFAULT_CMD_FLOOD_RATE;
     IDS_AppData.HaveLastCiCmdErrCount = false;
+    IDS_AppData.HaveLastCiCmdTotal    = false;
+    IDS_AppData.HaveLastCiLabCmdTotal = false;
     IDS_AppData.MirrorActive          = false;
     IDS_AppData.MirrorPipeValid       = false;
     IDS_AppData.MirrorStartMs         = 0;
@@ -577,10 +582,50 @@ void IDS_ProcessEvent(void)
 }
 
 /*
+** Shared command-flood (DDoS) rate check, used for both CI and CI_LAB: total
+** command arrivals (valid+invalid) since the last HK sample, converted to a
+** commands/sec rate and compared against CmdFloodRateThreshold. This is
+** deliberately separate from the CI reject-spike detector above - a
+** volumetric flood of well-formed commands never trips a rejected-command
+** counter, but it is still an attack signature worth flagging, and it is
+** the only one of the two checks that also applies to CI_LAB.
+*/
+static void IDS_CheckCmdFlood(const char *SourceName, CFE_SB_MsgId_t MsgId, uint32 NewTotal, uint32 *LastTotal,
+                              uint64 *LastTimeMs, bool *HaveLast, uint64 NowMs)
+{
+    float Rate;
+
+    if (IDS_AppData.Mode == IDS_MODE_MONITOR && *HaveLast)
+    {
+        if (IDS_Detector_CheckCmdRate(NewTotal, *LastTotal, NowMs, *LastTimeMs, IDS_AppData.CmdFloodRateThreshold,
+                                     &Rate))
+        {
+            char Description[64];
+            snprintf(Description, sizeof(Description), "%s command arrival rate %.1f/s exceeds threshold",
+                     SourceName, (double)Rate);
+            IDS_RaiseAnomaly(SourceName, CFE_SB_MsgIdToValue(MsgId), IDS_ANOMALY_CMD_FLOOD, Rate, Description);
+        }
+    }
+
+    *LastTotal  = NewTotal;
+    *LastTimeMs = NowMs;
+    *HaveLast   = true;
+    return;
+}
+
+/*
 ** Handle any other mirrored bus traffic (not our commands, not an EVS event,
 ** not a subscription report). Feeds the per-MID rate/silence features, and
-** specifically recognizes CI's HK packet to run the uplink reject-spike
-** detector - the one detector tied to the actual external attack surface.
+** specifically recognizes the HK packets of BOTH command-ingest apps:
+**   - CI (CI_HK_TLM_MID): the real, flight-representative uplink app. Runs
+**     both the reject-spike detector (usCmdErrCnt jump) and the flood-rate
+**     detector.
+**   - CI_LAB (CI_LAB_HK_TLM_MID): the classic reference app this sim's
+**     COSMOS DEBUG interface actually reaches (see the DEBUG/RADIO port
+**     trace - DEBUG never reaches CI at all). It has no equivalent of CI's
+**     usCmdErrCnt semantics tracked here, but the flood-rate detector still
+**     applies, since that is the ingest path actually exercised by ground
+**     testing over DEBUG.
 */
 void IDS_ProcessMirroredMessage(CFE_SB_MsgId_t MsgId)
 {
@@ -595,7 +640,8 @@ void IDS_ProcessMirroredMessage(CFE_SB_MsgId_t MsgId)
 
     if (CFE_SB_MsgIdToValue(MsgId) == CI_HK_TLM_MID)
     {
-        CI_HkTlm_t *CiHk = (CI_HkTlm_t *)IDS_AppData.MsgPtr;
+        CI_HkTlm_t *CiHk  = (CI_HkTlm_t *)IDS_AppData.MsgPtr;
+        uint32      Total = (uint32)CiHk->usCmdCnt + (uint32)CiHk->usCmdErrCnt;
 
         if (IDS_AppData.Mode == IDS_MODE_MONITOR && IDS_AppData.HaveLastCiCmdErrCount)
         {
@@ -609,6 +655,17 @@ void IDS_ProcessMirroredMessage(CFE_SB_MsgId_t MsgId)
         }
         IDS_AppData.LastCiCmdErrCount     = CiHk->usCmdErrCnt;
         IDS_AppData.HaveLastCiCmdErrCount = true;
+
+        IDS_CheckCmdFlood("CI", MsgId, Total, &IDS_AppData.LastCiCmdTotal, &IDS_AppData.LastCiCmdTotalTimeMs,
+                          &IDS_AppData.HaveLastCiCmdTotal, NowMs);
+    }
+    else if (CFE_SB_MsgIdToValue(MsgId) == CI_LAB_HK_TLM_MID)
+    {
+        CI_LAB_HkTlm_t *CiLabHk = (CI_LAB_HkTlm_t *)IDS_AppData.MsgPtr;
+        uint32          Total   = (uint32)CiLabHk->Payload.CommandCounter + (uint32)CiLabHk->Payload.CommandErrorCounter;
+
+        IDS_CheckCmdFlood("CI_LAB", MsgId, Total, &IDS_AppData.LastCiLabCmdTotal, &IDS_AppData.LastCiLabCmdTotalTimeMs,
+                          &IDS_AppData.HaveLastCiLabCmdTotal, NowMs);
     }
     return;
 }
@@ -1102,7 +1159,11 @@ void IDS_SetThreshold(uint8 DetectorId, float Threshold)
             break;
 
         case IDS_DETECTOR_CMD_REJECT:
-            IDS_AppData.CmdErrSpikeThreshold = (uint8)Threshold;
+            IDS_AppData.CmdErrSpikeThreshold = (uint16)Threshold;
+            break;
+
+        case IDS_DETECTOR_CMD_FLOOD:
+            IDS_AppData.CmdFloodRateThreshold = (double)Threshold;
             break;
 
         default:

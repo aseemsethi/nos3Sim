@@ -41,10 +41,15 @@
 **               flagged silent
 **   CMD_REJECT: jump in CI's rejected-command counter between two HK
 **               packets that triggers a call
+**   CMD_FLOOD:  combined valid+invalid command arrivals per second (at CI
+**               or CI_LAB) that triggers a call - catches a volumetric
+**               uplink flood even when every command is well-formed and
+**               none of them trip CMD_REJECT
 */
 #define IDS_DETECTOR_RATE       0
 #define IDS_DETECTOR_SILENCE    1
 #define IDS_DETECTOR_CMD_REJECT 2
+#define IDS_DETECTOR_CMD_FLOOD  3
 
 /*
 ** IDS_AnomalyRpt_tlm_t.AnomalyType values
@@ -54,6 +59,7 @@
 #define IDS_ANOMALY_RATE_FLOOD       2 /* known app+event, arriving far faster than learned */
 #define IDS_ANOMALY_APP_SILENT       3 /* known/enabled app has gone quiet */
 #define IDS_ANOMALY_CMD_REJECT_SPIKE 4 /* CI rejected-command counter jumped */
+#define IDS_ANOMALY_CMD_FLOOD        5 /* CI or CI_LAB total command arrival rate too high - possible DDoS */
 
 /*
 ** Generic "no arguments" command type definition

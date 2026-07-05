@@ -76,11 +76,12 @@ COMMAND IDS IDS_SET_THRESHOLD_CC <%= CosmosCfsConfig::PROCESSOR_ENDIAN %> "IDS S
   # Field order mirrors IDS_SetThreshold_cmd_t: Threshold (float) is declared
   # before DetectorId so it lands 4-byte aligned right after CmdHeader with
   # no mid-struct C compiler padding.
-  APPEND_PARAMETER THRESHOLD           32 FLOAT MIN_FLOAT32 MAX_FLOAT32 5.0 "Meaning depends on DETECTOR_ID: rate ratio, silence ms, or cmd-error-count spike"
+  APPEND_PARAMETER THRESHOLD           32 FLOAT MIN_FLOAT32 MAX_FLOAT32 5.0 "Meaning depends on DETECTOR_ID: rate ratio, silence ms, cmd-error-count spike, or cmd-flood rate"
   APPEND_PARAMETER DETECTOR_ID          8 UINT MIN_UINT8 MAX_UINT8 0        "Which detector this threshold applies to"
     STATE RATE       0
     STATE SILENCE    1
     STATE CMD_REJECT 2
+    STATE CMD_FLOOD  3
   # 3 bytes of trailing padding: the C struct rounds up to a multiple of 4
   # because it contains a float member, same as any other cFS command whose
   # payload size isn't already a multiple of 4. Declared as three individual
